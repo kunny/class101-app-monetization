@@ -1,6 +1,6 @@
 # sticky_notes
 
-간다한 노트 애플리케이션
+간단한 노트 애플리케이션
 
 ## Getting Started
 
