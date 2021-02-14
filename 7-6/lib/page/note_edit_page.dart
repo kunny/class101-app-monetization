@@ -17,7 +17,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
 
   TextEditingController bodyController = new TextEditingController();
 
-  Color color;
+  Color color = Note.colorDefault;
 
   bool isEdited = false;
 

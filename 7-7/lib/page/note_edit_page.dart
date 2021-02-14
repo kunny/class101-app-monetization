@@ -52,7 +52,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
         child: Container(
           color: color,
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
+            padding: adHelper().getContentPadding(context),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
