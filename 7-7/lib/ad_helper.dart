@@ -30,6 +30,7 @@ class AdHelper {
           adLoadResult.complete(false);
         }
       },
+      targetingInfo:
     );
 
     _banner.load();
@@ -84,6 +85,14 @@ class AdHelper {
       return BannerAd.testAdUnitId;
     }
     throw StateError("Unsupported platform");
+  }
+
+  MobileAdTargetingInfo _getTargetingInfo() {
+    return MobileAdTargetingInfo(
+      testDevices: [
+
+      ],
+    );
   }
 
   void dispose() {
