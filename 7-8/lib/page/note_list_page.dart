@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:sticky_notes/data/note.dart';
 import 'package:sticky_notes/page/note_edit_page.dart';
 import 'package:sticky_notes/page/note_page_args.dart';
@@ -13,18 +14,20 @@ class NoteListPage extends StatefulWidget {
 }
 
 class _NoteListPageState extends State<NoteListPage> {
+  BannerAd _banner;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    adHelper().loadBanner().then((ad) {
+      setState(() {
+        _banner = ad;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    adHelper().loadBanner().then((loaded) {
-      if (loaded) {
-        adHelper().showBanner().then((refresh) {
-          if (refresh) {
-            setState(() {});
-          }
-        });
-      }
-    });
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Sticky Notes'),
@@ -41,8 +44,8 @@ class _NoteListPageState extends State<NoteListPage> {
           if (snapshot.hasData) {
             List<Note> notes = snapshot.data;
 
-            return GridView.builder(
-              padding: adHelper().getContentPadding(context),
+            GridView noteGrid = GridView.builder(
+              padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
               itemCount: notes.length,
               itemBuilder: (context, index) {
                 return _buildCard(notes[index]);
@@ -52,6 +55,27 @@ class _NoteListPageState extends State<NoteListPage> {
                 childAspectRatio: 1,
               ),
             );
+
+            if (_banner != null) {
+              return SafeArea(
+                child: Column(
+                  children: [
+                    Expanded(child: noteGrid),
+                    Container(
+                      padding: EdgeInsets.only(bottom: 8.0),
+                      child: SizedBox(
+                        height: _banner.size.height.toDouble(),
+                        child: AdWidget(
+                          ad: _banner,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              return noteGrid;
+            }
           }
 
           return Center(

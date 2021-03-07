@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdHelper {
-  bool _initialized = false;
+  static const _kBannerBottomPadding = 8.0;
 
-  bool _isBannerShown = false;
+  bool _initialized = false;
 
   bool _isInterstitialLoaded = false;
 
@@ -15,41 +15,32 @@ class AdHelper {
 
   InterstitialAd _interstitial;
 
-  Future<bool> loadBanner() async {
+  Future<BannerAd> loadBanner() async {
     await _initialize();
 
     if (_banner != null) {
-      return _banner.isLoaded();
+      return _banner;
     }
 
-    Completer<bool> adLoadResult = Completer<bool>();
+    Completer<BannerAd> adLoadResult = Completer<BannerAd>();
 
     _banner = BannerAd(
       adUnitId: _getBannerAdUnitId(),
       size: AdSize.banner,
-      listener: (event) {
-        if (event == MobileAdEvent.loaded) {
-          adLoadResult.complete(true);
-        } else if (event == MobileAdEvent.failedToLoad) {
-          adLoadResult.complete(false);
-        }
-      },
-      targetingInfo: _getTargetingInfo(),
+      request: _buildAdRequest(),
+      listener: AdListener(
+        onAdLoaded: (ad) {
+          adLoadResult.complete(_banner);
+        },
+        onAdFailedToLoad: (ad, error) {
+          adLoadResult.complete(null);
+        },
+      ),
     );
 
     _banner.load();
 
     return adLoadResult.future;
-  }
-
-  Future<bool> showBanner() async {
-    if (_isBannerShown) {
-      return false;
-    }
-
-    await _banner.show(anchorType: AnchorType.bottom);
-    _isBannerShown = true;
-    return true;
   }
 
   void loadInterstitial() {
@@ -59,16 +50,19 @@ class AdHelper {
 
     _interstitial = InterstitialAd(
       adUnitId: _getInterstitialAdUnitId(),
-      listener: (event) {
-        if (event == MobileAdEvent.loaded) {
+      request: _buildAdRequest(),
+      listener: AdListener(
+        onAdLoaded: (ad) {
           _isInterstitialLoaded = true;
-        } else if (event == MobileAdEvent.failedToLoad) {
+        },
+        onAdFailedToLoad: (ad, error) {
           _isInterstitialLoaded = false;
-        } else if (event == MobileAdEvent.closed) {
+        },
+        onAdClosed: (ad) {
           _interstitial = null;
           _isInterstitialLoaded = false;
-        }
-      }
+        },
+      ),
     );
 
     _interstitial.load();
@@ -81,59 +75,50 @@ class AdHelper {
     _interstitial.show();
   }
 
-  EdgeInsets getContentPadding(BuildContext context) {
-    double viewPadding = MediaQuery.of(context).viewPadding.bottom;
-    double bottomPadding = _isBannerShown ? 66.0 : 16.0;
-    return EdgeInsets.fromLTRB(12.0, 16.0, 12.0, viewPadding + bottomPadding);
+  EdgeInsets getBannerBottomPadding() {
+    return EdgeInsets.only(bottom: _kBannerBottomPadding);
   }
 
   EdgeInsets getFabPadding(BuildContext context) {
-    if (!_isBannerShown) {
+    if (_banner == null) {
       return EdgeInsets.zero;
     }
     bool hasBottomNotch = MediaQuery.of(context).viewPadding.bottom > 0;
-    return EdgeInsets.only(bottom: hasBottomNotch ? 66.0 : 50.0);
+    int bannerHeight = _banner.size.height;
+    double defaultFabPadding = bannerHeight + _kBannerBottomPadding;
+
+    return EdgeInsets.only(
+        bottom: hasBottomNotch ? defaultFabPadding + 16.0 : defaultFabPadding);
   }
 
   Future<void> _initialize() async {
     if (!_initialized) {
-      await FirebaseAdMob.instance.initialize(appId: _getApplicationId());
+      await MobileAds.instance.initialize();
       _initialized = true;
     }
   }
 
-  String _getApplicationId() {
-    if (Platform.isAndroid) {
-      return 'ca-app-pub-3940256099942544~3347511713';
-    } else if (Platform.isIOS) {
-      return 'ca-app-pub-3940256099942544~1458002511';
-    }
-    throw StateError('Unsupported platform');
-  }
-
   String _getBannerAdUnitId() {
     if (Platform.isAndroid) {
-      return BannerAd.testAdUnitId;
+      return 'ca-app-pub-3940256099942544/6300978111';
     } else if (Platform.isIOS) {
-      return BannerAd.testAdUnitId;
+      return 'ca-app-pub-3940256099942544/2934735716';
     }
     throw StateError('Unsupported platform');
   }
 
   String _getInterstitialAdUnitId() {
     if (Platform.isAndroid) {
-      return InterstitialAd.testAdUnitId;
+      return 'ca-app-pub-3940256099942544/1033173712';
     } else if (Platform.isIOS) {
-      return InterstitialAd.testAdUnitId;
+      return 'ca-app-pub-3940256099942544/4411468910';
     }
     throw StateError('Unsupported platform');
   }
 
-  MobileAdTargetingInfo _getTargetingInfo() {
-    return MobileAdTargetingInfo(
-      testDevices: [
-
-      ],
+  AdRequest _buildAdRequest() {
+    return AdRequest(
+      testDevices: [],
     );
   }
 
