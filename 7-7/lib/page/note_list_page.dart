@@ -17,12 +17,14 @@ class _NoteListPageState extends State<NoteListPage> {
   BannerAd _banner;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    adHelper().loadBanner().then((ad) {
-      setState(() {
-        _banner = ad;
-      });
+  void initState() {
+    super.initState();
+    adHelper().loadBanner((ad) {
+      if (_banner == null) {
+        setState(() {
+          _banner = ad;
+        });
+      }
     });
   }
 
@@ -62,12 +64,10 @@ class _NoteListPageState extends State<NoteListPage> {
                   children: [
                     Expanded(child: noteGrid),
                     Container(
-                      padding: EdgeInsets.only(bottom: 8.0),
-                      child: SizedBox(
-                        height: _banner.size.height.toDouble(),
-                        child: AdWidget(
-                          ad: _banner,
-                        ),
+                      width: _banner.size.width.toDouble(),
+                      height: _banner.size.height.toDouble(),
+                      child: AdWidget(
+                        ad: _banner,
                       ),
                     ),
                   ],
@@ -84,7 +84,9 @@ class _NoteListPageState extends State<NoteListPage> {
         },
       ),
       floatingActionButton: Padding(
-        padding: adHelper().getFabPadding(context),
+        padding: _banner != null
+            ? adHelper().getFabPadding(context)
+            : EdgeInsets.zero,
         child: FloatingActionButton(
           child: Icon(Icons.add),
           tooltip: '새 노트',

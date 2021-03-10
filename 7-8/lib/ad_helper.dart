@@ -5,62 +5,51 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdHelper {
-  static const _kBannerBottomPadding = 8.0;
-
   bool _initialized = false;
-
-  bool _isInterstitialLoaded = false;
 
   BannerAd _banner;
 
   InterstitialAd _interstitial;
 
-  Future<BannerAd> loadBanner() async {
+  void loadBanner(Function(BannerAd) onBannerLoaded) async {
     await _initialize();
 
-    if (_banner != null) {
-      return _banner;
+    if (_banner != null && await _banner.isLoaded()) {
+      onBannerLoaded(_banner);
+      return;
     }
-
-    Completer<BannerAd> adLoadResult = Completer<BannerAd>();
 
     _banner = BannerAd(
       adUnitId: _getBannerAdUnitId(),
       size: AdSize.banner,
-      request: _buildAdRequest(),
+      request: AdRequest(
+        testDevices: [],
+      ),
       listener: AdListener(
         onAdLoaded: (ad) {
-          adLoadResult.complete(_banner);
-        },
-        onAdFailedToLoad: (ad, error) {
-          adLoadResult.complete(null);
+          onBannerLoaded(ad);
         },
       ),
     );
 
     _banner.load();
-
-    return adLoadResult.future;
   }
 
-  void loadInterstitial() {
-    if (_interstitial != null && _isInterstitialLoaded) {
+  void loadInterstitial() async {
+    await _initialize();
+
+    if (_interstitial != null && await _interstitial.isLoaded()) {
       return;
     }
 
     _interstitial = InterstitialAd(
       adUnitId: _getInterstitialAdUnitId(),
-      request: _buildAdRequest(),
+      request: AdRequest(
+        testDevices: [],
+      ),
       listener: AdListener(
-        onAdLoaded: (ad) {
-          _isInterstitialLoaded = true;
-        },
-        onAdFailedToLoad: (ad, error) {
-          _isInterstitialLoaded = false;
-        },
         onAdClosed: (ad) {
           _interstitial = null;
-          _isInterstitialLoaded = false;
         },
       ),
     );
@@ -68,27 +57,17 @@ class AdHelper {
     _interstitial.load();
   }
 
-  void showInterstitial() {
-    if (!_isInterstitialLoaded) {
-      return;
+  void showInterstitial() async {
+    if (await _interstitial.isLoaded()) {
+      _interstitial.show();
     }
-    _interstitial.show();
-  }
-
-  EdgeInsets getBannerBottomPadding() {
-    return EdgeInsets.only(bottom: _kBannerBottomPadding);
   }
 
   EdgeInsets getFabPadding(BuildContext context) {
-    if (_banner == null) {
-      return EdgeInsets.zero;
-    }
-    bool hasBottomNotch = MediaQuery.of(context).viewPadding.bottom > 0;
-    int bannerHeight = _banner.size.height;
-    double defaultFabPadding = bannerHeight + _kBannerBottomPadding;
-
-    return EdgeInsets.only(
-        bottom: hasBottomNotch ? defaultFabPadding + 16.0 : defaultFabPadding);
+    double bannerHeight = 50.0;
+    bool hasBottomNavigation = MediaQuery.of(context).viewPadding.bottom > 0;
+    double bottomPadding = hasBottomNavigation ? 16.0 : 0.0;
+    return EdgeInsets.only(bottom: bannerHeight + bottomPadding);
   }
 
   Future<void> _initialize() async {
@@ -114,12 +93,6 @@ class AdHelper {
       return 'ca-app-pub-3940256099942544/4411468910';
     }
     throw StateError('Unsupported platform');
-  }
-
-  AdRequest _buildAdRequest() {
-    return AdRequest(
-      testDevices: [],
-    );
   }
 
   void dispose() {

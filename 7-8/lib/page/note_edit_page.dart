@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:sticky_notes/data/note.dart';
 import 'package:sticky_notes/page/note_page_args.dart';
 import 'package:sticky_notes/providers.dart';
@@ -20,7 +21,6 @@ class _NoteEditPageState extends State<NoteEditPage> {
   Color color = Note.colorDefault;
 
   bool isEdited = false;
-
 
   @override
   void initState() {

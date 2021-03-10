@@ -5,54 +5,40 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdHelper {
-  static const _kBannerBottomPadding = 8.0;
 
   bool _initialized = false;
 
   BannerAd _banner;
 
-  Future<BannerAd> loadBanner() async {
+  void loadBanner(Function(BannerAd) onBannerLoaded) async {
     await _initialize();
 
-    if (_banner != null) {
-      return _banner;
+    if (_banner != null && await _banner.isLoaded()) {
+      onBannerLoaded(_banner);
+      return;
     }
-
-    Completer<BannerAd> adLoadResult = Completer<BannerAd>();
 
     _banner = BannerAd(
       adUnitId: _getBannerAdUnitId(),
       size: AdSize.banner,
-      request: _buildAdRequest(),
+      request: AdRequest(
+        testDevices: [],
+      ),
       listener: AdListener(
         onAdLoaded: (ad) {
-          adLoadResult.complete(_banner);
-        },
-        onAdFailedToLoad: (ad, error) {
-          adLoadResult.complete(null);
+          onBannerLoaded(ad);
         },
       ),
     );
 
     _banner.load();
-
-    return adLoadResult.future;
-  }
-
-  EdgeInsets getBannerBottomPadding() {
-    return EdgeInsets.only(bottom: _kBannerBottomPadding);
   }
 
   EdgeInsets getFabPadding(BuildContext context) {
-    if (_banner == null) {
-      return EdgeInsets.zero;
-    }
-    bool hasBottomNotch = MediaQuery.of(context).viewPadding.bottom > 0;
-    int bannerHeight = _banner.size.height;
-    double defaultFabPadding = bannerHeight + _kBannerBottomPadding;
-
-    return EdgeInsets.only(
-        bottom: hasBottomNotch ? defaultFabPadding + 16.0 : defaultFabPadding);
+    double bannerHeight = 50.0;
+    bool hasBottomNavigation = MediaQuery.of(context).viewPadding.bottom > 0;
+    double bottomPadding = hasBottomNavigation ? 16.0 : 0.0;
+    return EdgeInsets.only(bottom: bannerHeight + bottomPadding);
   }
 
   Future<void> _initialize() async {
@@ -69,12 +55,6 @@ class AdHelper {
       return 'ca-app-pub-3940256099942544/2934735716';
     }
     throw StateError("Unsupported platform");
-  }
-
-  AdRequest _buildAdRequest() {
-    return AdRequest(
-      testDevices: [],
-    );
   }
 
   void dispose() {
