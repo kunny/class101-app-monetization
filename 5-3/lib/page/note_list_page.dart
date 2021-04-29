@@ -30,7 +30,7 @@ class _NoteListPageState extends State<NoteListPage> {
         tooltip: '새 노트',
         onPressed: () {
           Navigator.pushNamed(context, NoteEditPage.routeName).then((value) {
-            //setState(() {});
+            setState(() {});
           });
         },
       ),
