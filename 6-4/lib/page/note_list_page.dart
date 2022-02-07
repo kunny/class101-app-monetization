@@ -29,7 +29,7 @@ class _NoteListPageState extends State<NoteListPage> {
           }
 
           if (snapshot.hasData) {
-            List<Note> notes = snapshot.data;
+            List<Note> notes = snapshot.data!;
 
             return GridView.builder(
               padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),

@@ -8,7 +8,7 @@ class NoteManager {
 
   static const _databaseVersion = 1;
 
-  Database _database;
+  Database? _database;
 
   Future<void> addNote(Note note) async {
     Database db = await _getDatabase();
@@ -43,16 +43,16 @@ class NoteManager {
   Future<void> updateNote(
     int id,
     String body, {
-    String title,
-    Color color,
+    String? title,
+    Color? color,
   }) async {
     Database db = await _getDatabase();
     await db.update(
       Note.tableName,
       Note(
         body,
-        title: title,
-        color: color,
+        title: title!,
+        color: color!,
       ).toRow(),
       where: '${Note.columnId} = ?',
       whereArgs: [id],
@@ -63,7 +63,7 @@ class NoteManager {
     if (_database == null) {
       _database = await _init();
     }
-    return _database;
+    return _database!;
   }
 
   Future<Database> _init() async {
