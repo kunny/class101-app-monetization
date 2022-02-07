@@ -6,9 +6,9 @@ class NoteEditPage extends StatefulWidget {
 }
 
 class _NoteEditPageState extends State<NoteEditPage> {
-  String title;
+  String? title;
 
-  String body;
+  String? body;
 
   @override
   Widget build(BuildContext context) {
