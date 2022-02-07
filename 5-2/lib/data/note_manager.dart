@@ -21,7 +21,7 @@ class NoteManager {
     return _notes;
   }
 
-  void updateNote(int index, String body, {String title, Color color}) {
+  void updateNote(int index, String body, {String? title, Color? color}) {
     _notes[index].body = body;
     if (title != null) {
       _notes[index].title = title;

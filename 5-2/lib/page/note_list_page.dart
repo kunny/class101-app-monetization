@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sticky_notes/data/note.dart';
-import 'package:sticky_notes/providers.dart';
 
 class NoteListPage extends StatefulWidget {
   static const routeName = '/';
