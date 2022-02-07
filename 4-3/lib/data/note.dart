@@ -14,8 +14,6 @@ class Note {
 
   static const colorBlue = Color(0xFFBBDEFB);
 
-  int id;
-
   String title;
 
   String body;

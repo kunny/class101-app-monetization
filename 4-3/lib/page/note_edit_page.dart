@@ -8,11 +8,11 @@ class NoteEditPage extends StatefulWidget {
 
 class _NoteEditPageState extends State<NoteEditPage> {
 
-  String title;
+  String? title;
 
-  String body;
+  String? body;
 
-  Color color;
+  Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +67,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
   }
 
   void _displayColorSelectionDialog() {
-    FocusManager.instance.primaryFocus.unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
 
     showDialog(
       context: context,
