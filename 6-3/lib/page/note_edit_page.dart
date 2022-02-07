@@ -17,13 +17,13 @@ class _NoteEditPageState extends State<NoteEditPage> {
 
   TextEditingController bodyController = new TextEditingController();
 
-  Color color;
+  Color color = Note.colorDefault;
 
   bool isEdited = false;
 
   @override
   Widget build(BuildContext context) {
-    NotePageArgs args = ModalRoute.of(context).settings.arguments;
+    NotePageArgs args = ModalRoute.of(context)!.settings.arguments! as NotePageArgs;
     if (args != null && !isEdited) {
       Note  note = args.note;
       titleController.text = note.title;
@@ -90,7 +90,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
   }
 
   void _displayColorSelectionDialog() {
-    FocusManager.instance.primaryFocus.unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
 
     showDialog(
       context: context,
@@ -149,7 +149,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
     String body = bodyController.text;
 
     if (body != null && body.isNotEmpty) {
-      NotePageArgs args = ModalRoute.of(context).settings.arguments;
+      NotePageArgs args = ModalRoute.of(context)!.settings.arguments! as NotePageArgs;
       if (args != null) {
         noteManager().updateNote(
           args.index,
@@ -167,7 +167,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
 
       Navigator.pop(context);
     } else {
-      scaffoldKey.currentState.showSnackBar(SnackBar(
+      scaffoldKey.currentState?.showSnackBar(SnackBar(
         content: Text('노트를 입력하세요.'),
         behavior: SnackBarBehavior.floating,
       ));
