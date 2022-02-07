@@ -1,12 +1,4 @@
 import 'package:flutter/material.dart';
-class Foo extends StatefulWidget {
-
-
-  @override
-  State createState() {
-
-  }
-}
 
 class NoteListPage extends StatefulWidget {
 
