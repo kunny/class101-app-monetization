@@ -14,7 +14,7 @@ class NoteViewPage extends StatefulWidget {
 class _NoteViewPageState extends State<NoteViewPage> {
   @override
   Widget build(BuildContext context) {
-    NotePageArgs args = ModalRoute.of(context).settings.arguments;
+    NotePageArgs args = ModalRoute.of(context)!.settings.arguments! as NotePageArgs;
     Note note = args.note;
 
     return Scaffold(
