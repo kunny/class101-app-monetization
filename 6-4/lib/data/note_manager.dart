@@ -43,16 +43,16 @@ class NoteManager {
   Future<void> updateNote(
     int id,
     String body, {
-    String? title,
-    Color? color,
+    required String title,
+    required Color color,
   }) async {
     Database db = await _getDatabase();
     await db.update(
       Note.tableName,
       Note(
         body,
-        title: title!,
-        color: color!,
+        title: title,
+        color: color,
       ).toRow(),
       where: '${Note.columnId} = ?',
       whereArgs: [id],
