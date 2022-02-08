@@ -1,20 +1,20 @@
 import 'package:sticky_notes/ad_helper.dart';
 import 'package:sticky_notes/data/note_manager.dart';
 
-AdHelper _adHelper;
+AdHelper? _adHelper;
 
-NoteManager _noteManager;
+NoteManager? _noteManager;
 
 AdHelper adHelper() {
   if (_adHelper == null) {
     _adHelper = new AdHelper();
   }
-  return _adHelper;
+  return _adHelper!;
 }
 
 NoteManager noteManager() {
   if (_noteManager == null) {
     _noteManager = new NoteManager();
   }
-  return _noteManager;
+  return _noteManager!;
 }
