@@ -8,30 +8,28 @@ class AdHelper {
 
   bool _initialized = false;
 
-  BannerAd _banner;
+  BannerAd? _banner;
 
   void loadBanner(Function(BannerAd) onBannerLoaded) async {
     await _initialize();
 
-    if (_banner != null && await _banner.isLoaded()) {
-      onBannerLoaded(_banner);
+    if (_banner != null) {
+      onBannerLoaded(_banner!);
       return;
     }
 
     _banner = BannerAd(
       adUnitId: _getBannerAdUnitId(),
       size: AdSize.banner,
-      request: AdRequest(
-        testDevices: [],
-      ),
-      listener: AdListener(
+      request: AdRequest(),
+      listener: BannerAdListener(
         onAdLoaded: (ad) {
-          onBannerLoaded(ad);
+          onBannerLoaded(ad as BannerAd);
         },
       ),
     );
 
-    _banner.load();
+    _banner!.load();
   }
 
   EdgeInsets getFabPadding(BuildContext context) {
@@ -59,7 +57,7 @@ class AdHelper {
 
   void dispose() {
     if (_banner != null) {
-      _banner.dispose();
+      _banner!.dispose();
     }
   }
 }
