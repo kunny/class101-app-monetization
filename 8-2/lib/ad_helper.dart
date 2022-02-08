@@ -7,59 +7,59 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 class AdHelper {
   bool _initialized = false;
 
-  BannerAd _banner;
+  BannerAd? _banner;
 
-  InterstitialAd _interstitial;
+  InterstitialAd? _interstitial;
 
   void loadBanner(Function(BannerAd) onBannerLoaded) async {
     await _initialize();
 
-    if (_banner != null && await _banner.isLoaded()) {
-      onBannerLoaded(_banner);
+    if (_banner != null) {
+      onBannerLoaded(_banner!);
       return;
     }
 
     _banner = BannerAd(
       adUnitId: _getBannerAdUnitId(),
       size: AdSize.banner,
-      request: AdRequest(
-        testDevices: [],
-      ),
-      listener: AdListener(
+      request: AdRequest(),
+      listener: BannerAdListener(
         onAdLoaded: (ad) {
-          onBannerLoaded(ad);
+          onBannerLoaded(ad as BannerAd);
         },
       ),
     );
 
-    _banner.load();
+    _banner!.load();
   }
 
   void loadInterstitial() async {
     await _initialize();
 
-    if (_interstitial != null && await _interstitial.isLoaded()) {
+    if (_interstitial != null) {
       return;
     }
 
-    _interstitial = InterstitialAd(
+    InterstitialAd.load(
       adUnitId: _getInterstitialAdUnitId(),
-      request: AdRequest(
-        testDevices: [],
-      ),
-      listener: AdListener(
-        onAdClosed: (ad) {
-          _interstitial = null;
+      request: AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          ad.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              _interstitial = null;
+            },
+          );
+          _interstitial = ad;
         },
+        onAdFailedToLoad: (e) {},
       ),
     );
-
-    _interstitial.load();
   }
 
   void showInterstitial() async {
-    if (await _interstitial.isLoaded()) {
-      _interstitial.show();
+    if (_interstitial != null) {
+      _interstitial!.show();
     }
   }
 
@@ -97,10 +97,10 @@ class AdHelper {
 
   void dispose() {
     if (_banner != null) {
-      _banner.dispose();
+      _banner!.dispose();
     }
     if (_interstitial != null) {
-      _interstitial.dispose();
+      _interstitial!.dispose();
     }
   }
 }
