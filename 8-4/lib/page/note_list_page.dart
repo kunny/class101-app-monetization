@@ -14,7 +14,7 @@ class NoteListPage extends StatefulWidget {
 }
 
 class _NoteListPageState extends State<NoteListPage> {
-  BannerAd _banner;
+  BannerAd? _banner;
 
   @override
   void initState() {
@@ -44,7 +44,7 @@ class _NoteListPageState extends State<NoteListPage> {
           }
 
           if (snapshot.hasData) {
-            List<Note> notes = snapshot.data;
+            List<Note> notes = snapshot.data!;
 
             GridView noteGrid = GridView.builder(
               padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
@@ -64,10 +64,10 @@ class _NoteListPageState extends State<NoteListPage> {
                   children: [
                     Expanded(child: noteGrid),
                     Container(
-                      width: _banner.size.width.toDouble(),
-                      height: _banner.size.height.toDouble(),
+                      width: _banner!.size.width.toDouble(),
+                      height: _banner!.size.height.toDouble(),
                       child: AdWidget(
-                        ad: _banner,
+                        ad: _banner!,
                       ),
                     ),
                   ],
