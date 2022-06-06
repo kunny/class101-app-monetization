@@ -38,8 +38,7 @@ class _NoteListPageState extends State<NoteListPage> {
   }
 
   List<Widget> _buildCards() {
-    List<Note> notes = noteManager().listNotes();
-    return notes.map((note) => _buildCard(note)).toList();
+    return noteManager().listNotes().map((note) => _buildCard(note)).toList();
   }
 
   Widget _buildCard(Note note) {
