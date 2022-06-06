@@ -8,9 +8,9 @@ class NoteEditPage extends StatefulWidget {
 
 class _NoteEditPageState extends State<NoteEditPage> {
 
-  String? title;
+  final titleController = TextEditingController();
 
-  String? body;
+  final bodyController = TextEditingController();
 
   Color? color;
 
@@ -42,9 +42,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
                   ),
                   maxLines: 1,
                   style: TextStyle(fontSize: 20.0),
-                  onChanged: (text) {
-                    title = text;
-                  },
+                  controller: titleController,
                 ),
                 SizedBox(height: 8.0),
                 TextField(
@@ -54,9 +52,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
                   ),
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
-                  onChanged: (text) {
-                    body = text;
-                  },
+                  controller: bodyController,
                 ),
               ],
             ),

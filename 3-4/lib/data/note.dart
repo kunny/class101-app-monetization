@@ -1,8 +1,8 @@
 class Note {
 
-  String title;
+  final String title;
 
-  String body;
+  final String body;
 
   Note(this.body, {
     this.title = '',

@@ -6,9 +6,10 @@ class NoteEditPage extends StatefulWidget {
 }
 
 class _NoteEditPageState extends State<NoteEditPage> {
-  String? title;
 
-  String? body;
+  final titleController = TextEditingController();
+
+  final bodyController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +29,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
               ),
               maxLines: 1,
               style: TextStyle(fontSize: 20.0),
-              onChanged: (text) {
-                title = text;
-              },
+              controller: titleController,
             ),
             SizedBox(height: 8.0),
             TextField(
@@ -40,9 +39,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
               ),
               maxLines: null,
               keyboardType: TextInputType.multiline,
-              onChanged: (text) {
-                body = text;
-              },
+              controller: bodyController,
             ),
           ],
         ),
