@@ -1,38 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:sticky_notes/data/note.dart';
-import 'package:sticky_notes/page/note_page_args.dart';
 import 'package:sticky_notes/providers.dart';
 
 class NoteEditPage extends StatefulWidget {
   static const routeName = '/edit';
+
+  final int? index;
+
+  NoteEditPage(this.index);
 
   @override
   State createState() => _NoteEditPageState();
 }
 
 class _NoteEditPageState extends State<NoteEditPage> {
-  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  final titleController = TextEditingController();
 
-  TextEditingController titleController = new TextEditingController();
+  final bodyController = TextEditingController();
 
-  TextEditingController bodyController = new TextEditingController();
-
-  Color color = Note.colorDefault;
-
-  bool isEdited = false;
+  Color? color;
 
   @override
-  Widget build(BuildContext context) {
-    NotePageArgs args = ModalRoute.of(context)!.settings.arguments! as NotePageArgs;
-    if (args != null && !isEdited) {
-      Note  note = args.note;
+  void initState() {
+    super.initState();
+    final noteIndex = widget.index;
+    if (noteIndex != null) {
+      final note = noteManager().getNote(noteIndex);
       titleController.text = note.title;
       bodyController.text = note.body;
       color = note.color;
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      key: scaffoldKey,
       appBar: AppBar(
         title: Text('노트 편집'),
         actions: [
@@ -64,23 +66,16 @@ class _NoteEditPageState extends State<NoteEditPage> {
                   ),
                   maxLines: 1,
                   style: TextStyle(fontSize: 20.0),
-                  onChanged: (text) {
-                    isEdited = true;
-                  },
                 ),
                 SizedBox(height: 8.0),
                 TextField(
-                  controller: bodyController,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: '노트 입력',
-                  ),
-                  maxLines: null,
-                  keyboardType: TextInputType.multiline,
-                  onChanged: (text) {
-                    isEdited = true;
-                  },
-                ),
+                    controller: bodyController,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: '노트 입력',
+                    ),
+                    maxLines: null,
+                    keyboardType: TextInputType.multiline),
               ],
             ),
           ),
@@ -140,34 +135,27 @@ class _NoteEditPageState extends State<NoteEditPage> {
     setState(() {
       Navigator.pop(context);
       color = newColor;
-      isEdited = true;
     });
   }
 
   void _saveNote() {
-    String title = titleController.text;
-    String body = bodyController.text;
+    if (bodyController.text.isNotEmpty) {
+      final note = Note(
+        bodyController.text,
+        title: titleController.text,
+        color: color,
+      );
 
-    if (body != null && body.isNotEmpty) {
-      NotePageArgs args = ModalRoute.of(context)!.settings.arguments! as NotePageArgs;
-      if (args != null) {
-        noteManager().updateNote(
-          args.index,
-          body,
-          title: title,
-          color: color,
-        );
+      final noteIndex = widget.index;
+      if (noteIndex != null) {
+        noteManager().updateNote(noteIndex, note);
       } else {
-        noteManager().addNote(Note(
-          body,
-          title: title,
-          color: color,
-        ));
+        noteManager().addNote(note);
       }
 
       Navigator.pop(context);
     } else {
-      scaffoldKey.currentState?.showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('노트를 입력하세요.'),
         behavior: SnackBarBehavior.floating,
       ));
