@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:sticky_notes/data/note.dart';
 import 'package:sticky_notes/page/note_edit_page.dart';
-import 'package:sticky_notes/page/note_page_args.dart';
 import 'package:sticky_notes/providers.dart';
 
 class NoteViewPage extends StatefulWidget {
   static const routeName = '/view';
+
+  final int id;
+
+  NoteViewPage(this.id);
 
   @override
   State createState() => _NoteViewPageState();
@@ -14,23 +17,24 @@ class NoteViewPage extends StatefulWidget {
 class _NoteViewPageState extends State<NoteViewPage> {
   @override
   Widget build(BuildContext context) {
-    NotePageArgs args = ModalRoute.of(context)!.settings.arguments! as NotePageArgs;
-
     return FutureBuilder<Note>(
-      future: noteManager().getNote(args.note.id),
-      builder: (context, snapshot) {
+      future: noteManager().getNote(widget.id),
+      builder: (context, snap) {
         AppBar appBar;
         Widget body;
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        if (snap.connectionState == ConnectionState.waiting) {
           appBar = AppBar();
           body = Center(
             child: CircularProgressIndicator(),
           );
-        }
-
-        if (snapshot.hasData) {
-          Note note = snapshot.data!;
+        } else if (snap.hasError) {
+          appBar = AppBar();
+          body = Center(
+            child: Text('오류가 발생했습니다'),
+          );
+        } else {
+          Note note = snap.data!;
 
           appBar = AppBar(
             title: Text(note.title.isEmpty ? '(제목 없음)' : note.title),
@@ -39,14 +43,14 @@ class _NoteViewPageState extends State<NoteViewPage> {
                 icon: Icon(Icons.edit),
                 tooltip: '편집',
                 onPressed: () {
-                  _edit(args);
+                  _edit(widget.id);
                 },
               ),
               IconButton(
                 icon: Icon(Icons.delete),
                 tooltip: '삭제',
                 onPressed: () {
-                  _confirmDelete(args);
+                  _confirmDelete(widget.id);
                 },
               ),
             ],
@@ -61,11 +65,6 @@ class _NoteViewPageState extends State<NoteViewPage> {
               ),
             ),
           );
-        } else {
-          appBar = AppBar();
-          body = Center(
-            child: Text('오류가 발생했습니다'),
-          );
         }
 
         return Scaffold(
@@ -76,17 +75,17 @@ class _NoteViewPageState extends State<NoteViewPage> {
     );
   }
 
-  void _edit(NotePageArgs args) {
+  void _edit(int id) {
     Navigator.pushNamed(
       context,
       NoteEditPage.routeName,
-      arguments: args,
+      arguments: id,
     ).then((value) {
       setState(() {});
     });
   }
 
-  void _confirmDelete(NotePageArgs args) {
+  void _confirmDelete(int id) {
     showDialog(
       context: context,
       builder: (context) {
@@ -94,16 +93,16 @@ class _NoteViewPageState extends State<NoteViewPage> {
           title: Text('노트 삭제'),
           content: Text('노트를 삭제할까요?'),
           actions: [
-            FlatButton(
+            TextButton(
               child: Text('아니오'),
               onPressed: () {
                 Navigator.pop(context);
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text('예'),
               onPressed: () {
-                noteManager().deleteNote(args.note.id);
+                noteManager().deleteNote(id);
                 Navigator.popUntil(context, (route) => route.isFirst);
               },
             ),

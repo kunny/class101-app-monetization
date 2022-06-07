@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sticky_notes/data/note.dart';
 import 'package:sticky_notes/page/note_edit_page.dart';
-import 'package:sticky_notes/page/note_page_args.dart';
 import 'package:sticky_notes/page/note_view_page.dart';
 import 'package:sticky_notes/providers.dart';
 
@@ -21,16 +20,17 @@ class _NoteListPageState extends State<NoteListPage> {
       ),
       body: FutureBuilder<List<Note>>(
         future: noteManager().listNotes(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+        builder: (context, snap) {
+          if (snap.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(),
             );
-          }
-
-          if (snapshot.hasData) {
-            List<Note> notes = snapshot.data!;
-
+          } else if (snap.hasError) {
+            return Center(
+              child: Text('오류가 발생했습니다.'),
+            );
+          } else {
+            final notes = snap.requireData;
             return GridView.builder(
               padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
               itemCount: notes.length,
@@ -43,10 +43,6 @@ class _NoteListPageState extends State<NoteListPage> {
               ),
             );
           }
-
-          return Center(
-            child: Text('오류가 발생했습니다.'),
-          );
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -67,7 +63,7 @@ class _NoteListPageState extends State<NoteListPage> {
         Navigator.pushNamed(
           context,
           NoteViewPage.routeName,
-          arguments: NotePageArgs(note),
+          arguments: note.id,
         ).then((value) {
           setState(() {});
         });
