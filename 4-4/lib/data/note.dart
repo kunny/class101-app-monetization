@@ -18,7 +18,7 @@ class Note {
 
   final String body;
 
-  final Color? color;
+  final Color color;
 
   Note(this.body, {
     this.title = '',

@@ -14,7 +14,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
 
   final bodyController = TextEditingController();
 
-  Color? color;
+  Color color = Note.colorDefault;
 
   @override
   Widget build(BuildContext context) {
