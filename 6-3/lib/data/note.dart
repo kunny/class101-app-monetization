@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 class Note {
-  static const idNewNote = -1;
-
   static const colorDefault = Colors.white;
 
   static const colorRed = Color(0xFFFFCDD2);
@@ -25,17 +23,17 @@ class Note {
 
   static const columnColor = 'color';
 
-  int id;
+  final int? id;
 
-  String title;
+  final String title;
 
-  String body;
+  final String body;
 
-  Color color;
+  final Color color;
 
   Note(
     this.body, {
-    this.id = idNewNote,
+    this.id,
     this.title = '',
     this.color = colorDefault,
   });
@@ -47,7 +45,7 @@ class Note {
           title: row[columnTitle],
           color: Color(row[columnColor]),
         );
-  
+
   Map<String, dynamic> toRow() {
     return {
       columnTitle: this.title,
