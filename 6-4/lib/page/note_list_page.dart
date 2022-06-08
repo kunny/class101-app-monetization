@@ -25,24 +25,24 @@ class _NoteListPageState extends State<NoteListPage> {
             return Center(
               child: CircularProgressIndicator(),
             );
-          } else if (snap.hasError) {
+          }
+
+          if (snap.hasError) {
             return Center(
               child: Text('오류가 발생했습니다.'),
             );
-          } else {
-            final notes = snap.requireData;
-            return GridView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
-              itemCount: notes.length,
-              itemBuilder: (context, index) {
-                return _buildCard(notes[index]);
-              },
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 1,
-              ),
-            );
           }
+
+          final notes = snap.requireData;
+          return GridView.builder(
+            padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
+            itemCount: notes.length,
+            itemBuilder: (context, index) => _buildCard(notes[index]),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 1,
+            ),
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(

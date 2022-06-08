@@ -55,12 +55,12 @@ class NoteManager {
     return _database!;
   }
 
-  Future<Database> _init() async {
+  Future<Database> _init() {
     return openDatabase(
       _databaseName,
       version: _databaseVersion,
-      onCreate: (db, version) async {
-        String sql = '''
+      onCreate: (db, version) {
+        final sql = '''
       CREATE TABLE ${Note.tableName} (
         ${Note.columnId} INTEGER PRIMARY KEY AUTOINCREMENT,
         ${Note.columnTitle} TEXT,

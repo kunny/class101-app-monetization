@@ -20,23 +20,24 @@ class _NoteViewPageState extends State<NoteViewPage> {
     return FutureBuilder<Note>(
       future: noteManager().getNote(widget.id),
       builder: (context, snap) {
-        AppBar appBar;
-        Widget body;
-
         if (snap.connectionState == ConnectionState.waiting) {
-          appBar = AppBar();
-          body = Center(
+          return Center(
             child: CircularProgressIndicator(),
           );
-        } else if (snap.hasError) {
-          appBar = AppBar();
-          body = Center(
-            child: Text('오류가 발생했습니다'),
-          );
-        } else {
-          Note note = snap.data!;
+        }
 
-          appBar = AppBar(
+        if (snap.hasError) {
+          return Scaffold(
+            appBar: AppBar(),
+            body: Center(
+              child: Text('오류가 발생했습니다'),
+            ),
+          );
+        }
+
+        final note = snap.requireData;
+        return Scaffold(
+          appBar: AppBar(
             title: Text(note.title.isEmpty ? '(제목 없음)' : note.title),
             actions: [
               IconButton(
@@ -54,9 +55,8 @@ class _NoteViewPageState extends State<NoteViewPage> {
                 },
               ),
             ],
-          );
-
-          body = SizedBox.expand(
+          ),
+          body: SizedBox.expand(
             child: Container(
               color: note.color,
               child: SingleChildScrollView(
@@ -64,12 +64,7 @@ class _NoteViewPageState extends State<NoteViewPage> {
                 child: Text(note.body),
               ),
             ),
-          );
-        }
-
-        return Scaffold(
-          appBar: appBar,
-          body: body,
+          ),
         );
       },
     );
