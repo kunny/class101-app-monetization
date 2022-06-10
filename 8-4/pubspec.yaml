@@ -9,9 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  google_mobile_ads: ^1.0.1
+  google_mobile_ads: ^1.2.0
   sqflite: ^2.0.2
-  path: ^1.8.0
 
 dev_dependencies:
   flutter_test:
