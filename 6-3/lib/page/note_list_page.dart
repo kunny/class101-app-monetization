@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sticky_notes/data/note.dart';
 import 'package:sticky_notes/page/note_edit_page.dart';
-import 'package:sticky_notes/page/note_page_args.dart';
 import 'package:sticky_notes/page/note_view_page.dart';
 import 'package:sticky_notes/providers.dart';
 
@@ -40,22 +39,13 @@ class _NoteListPageState extends State<NoteListPage> {
   }
 
   List<Widget> _buildCards() {
-    List<Note> notes = noteManager().listNotes();
+    final notes = noteManager().listNotes();
     return List.generate(
         notes.length, (index) => _buildCard(index, notes[index]));
   }
 
   Widget _buildCard(int index, Note note) {
     return InkWell(
-      onTap: () {
-        Navigator.pushNamed(
-          context,
-          NoteViewPage.routeName,
-          arguments: NotePageArgs(index, note),
-        ).then((value) {
-          setState(() {});
-        });
-      },
       child: Card(
         color: note.color,
         child: Padding(
@@ -82,6 +72,15 @@ class _NoteListPageState extends State<NoteListPage> {
           padding: EdgeInsets.all(12.0),
         ),
       ),
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          NoteViewPage.routeName,
+          arguments: index,
+        ).then((value) {
+          setState(() {});
+        });
+      },
     );
   }
 }

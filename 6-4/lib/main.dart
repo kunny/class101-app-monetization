@@ -8,21 +8,26 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Sticky Notes',
-      theme: ThemeData(
-        primarySwatch: Colors.teal,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      initialRoute: NoteListPage.routeName,
-      routes: {
-        NoteListPage.routeName: (context) => NoteListPage(),
-        NoteEditPage.routeName: (context) => NoteEditPage(),
-        NoteViewPage.routeName: (context) => NoteViewPage(),
-      }
-    );
+        title: 'Sticky Notes',
+        theme: ThemeData(
+          primarySwatch: Colors.teal,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        initialRoute: NoteListPage.routeName,
+        routes: {
+          NoteListPage.routeName: (context) => NoteListPage(),
+          NoteEditPage.routeName: (context) {
+            final args = ModalRoute.of(context)!.settings.arguments;
+            final index = args != null ? args as int : null;
+            return NoteEditPage(index);
+          },
+          NoteViewPage.routeName: (context) {
+            final index = ModalRoute.of(context)!.settings.arguments as int;
+            return NoteViewPage(index);
+          },
+        });
   }
 }

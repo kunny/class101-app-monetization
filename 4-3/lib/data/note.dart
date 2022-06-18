@@ -14,13 +14,11 @@ class Note {
 
   static const colorBlue = Color(0xFFBBDEFB);
 
-  int id;
+  final String title;
 
-  String title;
+  final String body;
 
-  String body;
-
-  Color color;
+  final Color color;
 
   Note(this.body, {
     this.title = '',

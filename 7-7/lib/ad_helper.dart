@@ -1,44 +1,24 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdHelper {
-
   bool _initialized = false;
 
-  BannerAd _banner;
-
-  void loadBanner(Function(BannerAd) onBannerLoaded) async {
+  void loadBanner(Function(BannerAd) onLoaded) async {
     await _initialize();
 
-    if (_banner != null && await _banner.isLoaded()) {
-      onBannerLoaded(_banner);
-      return;
-    }
-
-    _banner = BannerAd(
+    final banner = BannerAd(
       adUnitId: _getBannerAdUnitId(),
       size: AdSize.banner,
-      request: AdRequest(
-        testDevices: [],
-      ),
-      listener: AdListener(
-        onAdLoaded: (ad) {
-          onBannerLoaded(ad);
-        },
+      request: AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) => onLoaded(ad as BannerAd),
       ),
     );
 
-    _banner.load();
-  }
-
-  EdgeInsets getFabPadding(BuildContext context) {
-    double bannerHeight = 50.0;
-    bool hasBottomNavigation = MediaQuery.of(context).viewPadding.bottom > 0;
-    double bottomPadding = hasBottomNavigation ? 16.0 : 0.0;
-    return EdgeInsets.only(bottom: bannerHeight + bottomPadding);
+    banner.load();
   }
 
   Future<void> _initialize() async {
@@ -51,15 +31,10 @@ class AdHelper {
   String _getBannerAdUnitId() {
     if (Platform.isAndroid) {
       return 'ca-app-pub-3940256099942544/6300978111';
-    } else if (Platform.isIOS) {
+    }
+    if (Platform.isIOS) {
       return 'ca-app-pub-3940256099942544/2934735716';
     }
     throw StateError("Unsupported platform");
-  }
-
-  void dispose() {
-    if (_banner != null) {
-      _banner.dispose();
-    }
   }
 }

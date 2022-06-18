@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:sticky_notes/data/note.dart';
 import 'package:sticky_notes/page/note_edit_page.dart';
-import 'package:sticky_notes/page/note_page_args.dart';
 import 'package:sticky_notes/providers.dart';
 
 class NoteViewPage extends StatefulWidget {
   static const routeName = '/view';
+
+  final int index;
+
+  NoteViewPage(this.index);
 
   @override
   State createState() => _NoteViewPageState();
@@ -14,9 +16,7 @@ class NoteViewPage extends StatefulWidget {
 class _NoteViewPageState extends State<NoteViewPage> {
   @override
   Widget build(BuildContext context) {
-    NotePageArgs args = ModalRoute.of(context).settings.arguments;
-    Note note = args.note;
-
+    final note = noteManager().getNote(widget.index);
     return Scaffold(
       appBar: AppBar(
         title: Text(note.title.isEmpty ? '(제목 없음)' : note.title),
@@ -25,14 +25,14 @@ class _NoteViewPageState extends State<NoteViewPage> {
             icon: Icon(Icons.edit),
             tooltip: '편집',
             onPressed: () {
-              _edit(args);
+              _edit(widget.index);
             },
           ),
           IconButton(
             icon: Icon(Icons.delete),
             tooltip: '삭제',
             onPressed: () {
-              _confirmDelete(args);
+              _confirmDelete(widget.index);
             },
           ),
         ],
@@ -49,17 +49,17 @@ class _NoteViewPageState extends State<NoteViewPage> {
     );
   }
 
-  void _edit(NotePageArgs args) {
+  void _edit(int index) {
     Navigator.pushNamed(
       context,
       NoteEditPage.routeName,
-      arguments: args,
-    ).then((value) {
+      arguments: index,
+    ).then((_) {
       setState(() {});
     });
   }
 
-  void _confirmDelete(NotePageArgs args) {
+  void _confirmDelete(int index) {
     showDialog(
       context: context,
       builder: (context) {
@@ -67,16 +67,16 @@ class _NoteViewPageState extends State<NoteViewPage> {
           title: Text('노트 삭제'),
           content: Text('노트를 삭제할까요?'),
           actions: [
-            FlatButton(
+            TextButton(
               child: Text('아니오'),
               onPressed: () {
                 Navigator.pop(context);
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text('예'),
               onPressed: () {
-                noteManager().deleteNote(args.index);
+                noteManager().deleteNote(index);
                 Navigator.popUntil(context, (route) => route.isFirst);
               },
             ),

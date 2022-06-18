@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:sticky_notes/data/note.dart';
 
 class NoteManager {
@@ -21,13 +20,7 @@ class NoteManager {
     return _notes;
   }
 
-  void updateNote(int index, String body, {String title, Color color}) {
-    _notes[index].body = body;
-    if (title != null) {
-      _notes[index].title = title;
-    }
-    if (color != null) {
-      _notes[index].color = color;
-    }
+  void updateNote(int index, Note note) {
+    _notes[index] = note;
   }
 }

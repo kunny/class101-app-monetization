@@ -10,18 +10,15 @@ class NoteEditPage extends StatefulWidget {
 }
 
 class _NoteEditPageState extends State<NoteEditPage> {
-  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  final titleController = TextEditingController();
 
-  TextEditingController titleController = new TextEditingController();
+  final bodyController = TextEditingController();
 
-  TextEditingController bodyController = new TextEditingController();
-
-  Color color;
+  Color color = Note.colorDefault;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: scaffoldKey,
       appBar: AppBar(
         title: Text('노트 편집'),
         actions: [
@@ -73,7 +70,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
   }
 
   void _displayColorSelectionDialog() {
-    FocusManager.instance.primaryFocus.unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
 
     showDialog(
       context: context,
@@ -127,19 +124,16 @@ class _NoteEditPageState extends State<NoteEditPage> {
   }
 
   void _saveNote() {
-    String title = titleController.text;
-    String body = bodyController.text;
-
-    if (body != null && body.isNotEmpty) {
+    if (bodyController.text.isNotEmpty) {
       noteManager().addNote(Note(
-        body,
-        title: title,
+        bodyController.text,
+        title: titleController.text,
         color: color,
       ));
 
       Navigator.pop(context);
     } else {
-      scaffoldKey.currentState.showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('노트를 입력하세요.'),
         behavior: SnackBarBehavior.floating,
       ));

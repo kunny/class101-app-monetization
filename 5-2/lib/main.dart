@@ -21,7 +21,10 @@ class MyApp extends StatelessWidget {
       routes: {
         NoteListPage.routeName: (context) => NoteListPage(),
         NoteEditPage.routeName: (context) => NoteEditPage(),
-        NoteViewPage.routeName: (context) => NoteViewPage(),
+        NoteViewPage.routeName: (context) {
+          final int index = ModalRoute.of(context)!.settings.arguments as int;
+          return NoteViewPage(index);
+        },
       }
     );
   }

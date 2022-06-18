@@ -8,18 +8,15 @@ class NoteEditPage extends StatefulWidget {
 }
 
 class _NoteEditPageState extends State<NoteEditPage> {
-  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  final titleController = TextEditingController();
 
-  String title;
+  final bodyController = TextEditingController();
 
-  String body;
-
-  Color color;
+  Color color = Note.colorDefault;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: scaffoldKey,
       appBar: AppBar(
         title: Text('노트 편집'),
         actions: [
@@ -50,9 +47,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
                   ),
                   maxLines: 1,
                   style: TextStyle(fontSize: 20.0),
-                  onChanged: (text) {
-                    title = text;
-                  },
+                  controller: titleController,
                 ),
                 SizedBox(height: 8.0),
                 TextField(
@@ -62,9 +57,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
                   ),
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
-                  onChanged: (text) {
-                    body = text;
-                  },
+                  controller: bodyController,
                 ),
               ],
             ),
@@ -75,7 +68,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
   }
 
   void _displayColorSelectionDialog() {
-    FocusManager.instance.primaryFocus.unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
 
     showDialog(
       context: context,
@@ -129,14 +122,14 @@ class _NoteEditPageState extends State<NoteEditPage> {
   }
 
   void _saveNote() {
-    if (body != null && body.isNotEmpty) {
+    if (bodyController.text.isNotEmpty) {
       noteManager().addNote(Note(
-        body,
-        title: title,
+        bodyController.text,
+        title: titleController.text,
         color: color,
       ));
     } else {
-      scaffoldKey.currentState.showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('노트를 입력하세요.'),
         behavior: SnackBarBehavior.floating,
       ));

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sticky_notes/page/note_edit_page.dart';
-import 'package:sticky_notes/page/note_list_page.dart';
 
 void main() {
   runApp(MyApp());

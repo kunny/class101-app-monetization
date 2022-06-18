@@ -1,45 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:sticky_notes/data/note.dart';
-import 'package:sticky_notes/page/note_page_args.dart';
 import 'package:sticky_notes/providers.dart';
 
 class NoteEditPage extends StatefulWidget {
   static const routeName = '/edit';
+
+  final int? id;
+
+  NoteEditPage(this.id);
 
   @override
   State createState() => _NoteEditPageState();
 }
 
 class _NoteEditPageState extends State<NoteEditPage> {
-  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  final titleController = new TextEditingController();
 
-  TextEditingController titleController = new TextEditingController();
-
-  TextEditingController bodyController = new TextEditingController();
+  final bodyController = new TextEditingController();
 
   Color color = Note.colorDefault;
 
-  bool isEdited = false;
+  InterstitialAd? _interstitial;
 
   @override
   void initState() {
     super.initState();
-    adHelper().loadInterstitial();
+    final noteId = widget.id;
+    if (noteId != null) {
+      noteManager().getNote(noteId).then((note) {
+        titleController.text = note.title;
+        bodyController.text = note.body;
+        setState(() {
+          color = note.color;
+        });
+      });
+    }
+
+    adHelper().loadInterstitial((ad) {
+      _interstitial = ad;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    NotePageArgs args = ModalRoute.of(context).settings.arguments;
-    if (args != null && !isEdited) {
-      Note  note = args.note;
-      titleController.text = note.title;
-      bodyController.text = note.body;
-      color = note.color;
-    }
-
     return Scaffold(
-      key: scaffoldKey,
       appBar: AppBar(
         title: Text('노트 편집'),
         actions: [
@@ -71,9 +76,6 @@ class _NoteEditPageState extends State<NoteEditPage> {
                   ),
                   maxLines: 1,
                   style: TextStyle(fontSize: 20.0),
-                  onChanged: (text) {
-                    isEdited = true;
-                  },
                 ),
                 SizedBox(height: 8.0),
                 TextField(
@@ -84,9 +86,6 @@ class _NoteEditPageState extends State<NoteEditPage> {
                   ),
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
-                  onChanged: (text) {
-                    isEdited = true;
-                  },
                 ),
               ],
             ),
@@ -96,8 +95,14 @@ class _NoteEditPageState extends State<NoteEditPage> {
     );
   }
 
+  @override
+  void dispose() {
+    _interstitial?.dispose();
+    super.dispose();
+  }
+
   void _displayColorSelectionDialog() {
-    FocusManager.instance.primaryFocus.unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
 
     showDialog(
       context: context,
@@ -147,35 +152,28 @@ class _NoteEditPageState extends State<NoteEditPage> {
     setState(() {
       Navigator.pop(context);
       color = newColor;
-      isEdited = true;
     });
   }
 
   void _saveNote() {
-    String title = titleController.text;
-    String body = bodyController.text;
+    if (bodyController.text.isNotEmpty) {
+      final note = Note(
+        bodyController.text,
+        title: titleController.text,
+        color: color,
+      );
 
-    if (body != null && body.isNotEmpty) {
-      NotePageArgs args = ModalRoute.of(context).settings.arguments;
-      if (args != null) {
-        noteManager().updateNote(
-          args.note.id,
-          body,
-          title: title,
-          color: color,
-        );
+      final noteId = widget.id;
+      if (noteId != null) {
+        noteManager().updateNote(noteId, note);
       } else {
-        noteManager().addNote(Note(
-          body,
-          title: title,
-          color: color,
-        ));
+        noteManager().addNote(note);
       }
 
-      adHelper().showInterstitial();
+      _interstitial?.show();
       Navigator.pop(context);
     } else {
-      scaffoldKey.currentState.showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('노트를 입력하세요.'),
         behavior: SnackBarBehavior.floating,
       ));
