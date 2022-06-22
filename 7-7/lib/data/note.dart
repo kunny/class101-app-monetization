@@ -48,9 +48,9 @@ class Note {
 
   Map<String, dynamic> toRow() {
     return {
-      columnTitle: this.title,
-      columnBody: this.body,
-      columnColor: this.color.value,
+      columnTitle: title,
+      columnBody: body,
+      columnColor: color.value,
     };
   }
 }
