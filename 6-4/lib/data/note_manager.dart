@@ -50,17 +50,11 @@ class NoteManager {
 
   Future<Database> _getDatabase() async {
     if (_database == null) {
-      _database = await _init();
-    }
-    return _database!;
-  }
-
-  Future<Database> _init() {
-    return openDatabase(
-      _databaseName,
-      version: _databaseVersion,
-      onCreate: (db, version) {
-        final sql = '''
+      _database = await openDatabase(
+        _databaseName,
+        version: _databaseVersion,
+        onCreate: (db, version) {
+          final sql = '''
       CREATE TABLE ${Note.tableName} (
         ${Note.columnId} INTEGER PRIMARY KEY AUTOINCREMENT,
         ${Note.columnTitle} TEXT,
@@ -68,8 +62,10 @@ class NoteManager {
         ${Note.columnColor} INTEGER NOT NULL
       )
     ''';
-        return db.execute(sql);
-      },
-    );
+          return db.execute(sql);
+        },
+      );
+    }
+    return _database!;
   }
 }

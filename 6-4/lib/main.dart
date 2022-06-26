@@ -21,12 +21,12 @@ class MyApp extends StatelessWidget {
           NoteListPage.routeName: (context) => NoteListPage(),
           NoteEditPage.routeName: (context) {
             final args = ModalRoute.of(context)!.settings.arguments;
-            final index = args != null ? args as int : null;
-            return NoteEditPage(index);
+            final id = args != null ? args as int : null;
+            return NoteEditPage(id);
           },
           NoteViewPage.routeName: (context) {
-            final index = ModalRoute.of(context)!.settings.arguments as int;
-            return NoteViewPage(index);
+            final id = ModalRoute.of(context)!.settings.arguments as int;
+            return NoteViewPage(id);
           },
         });
   }
