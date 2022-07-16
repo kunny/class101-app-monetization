@@ -7,14 +7,14 @@ NoteManager? _noteManager;
 
 AdHelper adHelper() {
   if (_adHelper == null) {
-    _adHelper = new AdHelper();
+    _adHelper = AdHelper();
   }
   return _adHelper!;
 }
 
 NoteManager noteManager() {
   if (_noteManager == null) {
-    _noteManager = new NoteManager();
+    _noteManager = NoteManager();
   }
   return _noteManager!;
 }

@@ -4,7 +4,7 @@ NoteManager? _noteManager;
 
 NoteManager noteManager() {
   if (_noteManager == null) {
-    _noteManager = new NoteManager();
+    _noteManager = NoteManager();
   }
   return _noteManager!;
 }
